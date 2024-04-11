@@ -15,6 +15,7 @@ datasource db {
 
 model user {
   user_id          Int        @id @default(autoincrement())
+  fullName         String 
   username         String     @unique 
   password         String 
   is_premium       Boolean    @default(false)
