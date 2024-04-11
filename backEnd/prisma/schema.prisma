@@ -1,0 +1,56 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model user {
+  user_id          Int        @id @default(autoincrement())
+  username         String     @unique 
+  password         String 
+  is_premium       Boolean    @default(false)
+  rooms            Room[]
+  forgetPassword   String
+  validity         DateTime
+  reviews          Review[]
+  reviews_about    Review[]   @relation("about")
+  room_resolves    Room[]     @relation("resolver")
+  payments         Payment[]
+}
+
+model Room {
+  room_id     String    @id @default(uuid())
+  owner       user      @relation(fields: [ownerId], references: [user_id])
+  ownerId     Int
+  resolver    user      @relation("resolver", fields: [resolverId], references: [user_id])
+  resolverId  Int       @unique
+  question    String 
+  description String
+  image_url   String? 
+}
+
+model Review {
+  review_id   Int       @id @default(autoincrement())
+  stars       Int
+  comment     String
+  owner       user      @relation(fields: [ownerId], references: [user_id])
+  ownerId     Int       @unique
+  about       user      @relation("about", fields: [aboutId], references: [user_id])
+  aboutId     Int       @unique
+}
+
+model Payment {
+  payment_id     Int     @id @default(autoincrement())
+  owner          user    @relation(fields: [ownerId], references: [user_id])
+  ownerId        Int     @unique
+  transaction_id String  @unique 
+}
