@@ -14,44 +14,57 @@ datasource db {
 }
 
 model user {
-  user_id          Int        @id @default(autoincrement())
-  fullName         String 
-  username         String     @unique 
-  password         String 
-  is_premium       Boolean    @default(false)
-  rooms            Room[]
-  forgetPassword   String
-  validity         DateTime
-  reviews          Review[]
-  reviews_about    Review[]   @relation("about")
-  room_resolves    Room[]     @relation("resolver")
-  payments         Payment[]
+  user_id       Int       @id @default(autoincrement()) //user id primary key 
+  fullName      String 
+  username      String    @unique
+  password      String
+  is_premium    Boolean   @default(false)
+  queries       Query[]  //all quereies of the customer 
+  validity      DateTime   //if membership is bought based on thag we will increase the validity 
+  reviews       Review[]   //maintain the relationship between the user and the review table 
+  reviews_about Review[]  @relation("about")  // review about me 
+  room_resolves Query[]    @relation("resolver") //review which i will give
+  payments      Payment[] //relation for handling paymne table hence managing the validity 
+  Reply         Reply[]   //maintain the relationship between the reply and user 
+  forgetPassword String  // to handle when we fporget the password
 }
 
-model Room {
-  room_id     String    @id @default(uuid())
-  owner       user      @relation(fields: [ownerId], references: [user_id])
-  ownerId     Int
-  resolver    user      @relation("resolver", fields: [resolverId], references: [user_id])
-  resolverId  Int       @unique
-  question    String 
+model Query {
+  query_id  Int        @id @default(autoincrement())
+  owner     user       @relation(fields: [ownerId], references: [user_id])
+  ownerId   Int        
+  replies   Reply[]
+  question  String
   description String
-  image_url   String? 
+  image_url String?
+  room_id   String?
+  resolver  user? @relation("resolver", fields: [resolverId], references: [user_id])
+  resolverId Int?
+}
+
+
+model Reply {
+  reply_id        Int    @id @unique @default(autoincrement())
+  comment         String
+  commentedUser   user   @relation(fields: [commentedUserId], references: [user_id])
+  commentedUserId Int    @unique
+  query           Query? @relation(fields: [queryId], references: [query_id])
+  queryId         Int?
 }
 
 model Review {
-  review_id   Int       @id @default(autoincrement())
-  stars       Int
-  comment     String
-  owner       user      @relation(fields: [ownerId], references: [user_id])
-  ownerId     Int       @unique
-  about       user      @relation("about", fields: [aboutId], references: [user_id])
-  aboutId     Int       @unique
+  review_id Int    @id @default(autoincrement())
+  stars     Int
+  comment   String
+  owner     user   @relation(fields: [ownerId], references: [user_id])
+  ownerId   Int    @unique
+  about     user   @relation("about", fields: [aboutId], references: [user_id])
+  aboutId   Int    @unique
 }
 
 model Payment {
-  payment_id     Int     @id @default(autoincrement())
-  owner          user    @relation(fields: [ownerId], references: [user_id])
-  ownerId        Int     @unique
-  transaction_id String  @unique 
+  payment_id     Int    @id @default(autoincrement())
+  owner          user   @relation(fields: [ownerId], references: [user_id])
+  ownerId        Int    @unique
+  transaction_id String @unique
 }
