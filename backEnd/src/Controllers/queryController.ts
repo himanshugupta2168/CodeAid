@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import z, { ZodNumber, boolean, date, string } from "zod"
 const prisma = new PrismaClient();
-
+import { io } from "../index";
 const query=z.object({
     question:string(),
     description:string(),

@@ -5,9 +5,10 @@ const app = express();
 const server = require('http').createServer(app);
 import userRoutes from "./Routes/userRoutes"
 import queryRoutes from "./Routes/queryRoutes"
-const io = new Server(server, {
+export const io = new Server(server, {
   cors: {
-    origin: '*' 
+    origin: '*' ,
+    credentials:true
   }
 });
 app.use(express.json());
@@ -15,16 +16,28 @@ app.use(express.json());
 app.use("/api/v1/auth", userRoutes)
 app.use("/api/v1/queries",queryRoutes)
 
-app.get('/', (req, res) => {
-  res.send('Hello from the socket server!');
+app.get('/', async (req, res) => {
+  
 });
 
-io.on('connection', (socket) => {
-  console.log('A user connected!');
 
-  socket.on('message', (data) => {
-    console.log('Received message:', data);
+
+io.on('connection', (socket) => {
+  console.log('A user connected!', socket.id);
+  socket.emit("socket_id", socket.id);
+
+
+  socket.on("message", (data) => {
+    console.log(data);
+    socket.broadcast.emit("message", data);
   });
+
+  socket.on("code_change", (data) => {
+    socket.broadcast.emit("code_change", data); // Emit the "code_change" event with the data to all connected sockets except the sender
+  });
+  socket.on("language_change", (data)=>{
+    socket.broadcast.emit("language_change", data);
+  })
 
   socket.on('disconnect', () => {
     console.log('A user disconnected');
