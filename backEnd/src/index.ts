@@ -38,10 +38,26 @@ io.on('connection', (socket) => {
   socket.on("language_change", (data)=>{
     socket.broadcast.emit("language_change", data);
   })
-
+  socket.on("outgoing_video", (offer) => {
+    // console.log(offer);
+    if (offer) {
+      socket.broadcast.emit("incoming_video", offer); // Emitting offer object back to the same client
+    } else {
+      console.error("Received null offer.");
+      // Handle the null offer case appropriately, such as sending an error message back to the client
+      socket.emit("video_error", "Offer is null");
+    }
+  });
+  socket.on("call_accepted", (offer)=>{
+    socket.broadcast.emit("call_accepted", offer);
+  })
+  
+  
   socket.on('disconnect', () => {
     console.log('A user disconnected');
   });
+
+
 });
 
 app.use((err:Error, req:Request, res:Response, next:NextFunction)=>{
