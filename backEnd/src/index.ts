@@ -17,7 +17,7 @@ app.use("/api/v1/auth", userRoutes)
 app.use("/api/v1/queries",queryRoutes)
 
 app.get('/', async (req, res) => {
-  
+  return res.send("hello");
 });
 
 

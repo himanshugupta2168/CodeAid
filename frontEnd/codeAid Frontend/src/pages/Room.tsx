@@ -7,7 +7,7 @@ import PeerService from "../services/peer";
 function Room() {
   const editorRef = useRef<any>(null);
   const chatBoxRef = useRef<any>(null);
-  const socket = useMemo(() => io("http://192.168.133.121:3000"), []);
+  const socket = useMemo(() => io("https://codeaid-h86n.onrender.com:3000"), []);
 
   const [cursorPosition, setCursorPosition] = useState({ lineNumber: 1, column: 1 });
   const [offset, setOffset] = useState(-1);
