@@ -7,7 +7,7 @@ import PeerService from "../services/peer";
 function Room() {
   const editorRef = useRef<any>(null);
   const chatBoxRef = useRef<any>(null);
-  const socket = useMemo(() => io("https://codeaid-h86n.onrender.com:3000"), []);
+  const socket = useMemo(() => io("http://192.168.133.121:3000"), []);
 
   const [cursorPosition, setCursorPosition] = useState({ lineNumber: 1, column: 1 });
   const [offset, setOffset] = useState(-1);
@@ -107,16 +107,27 @@ function Room() {
   }, [socket]);
 
   const handleAcceptedCall = useCallback(async (data: any) => {
-    PeerService.setLocalDescription(data);
-    for (const track of myStream?.getTracks() || []) {
-      //@ts-ignore
-      PeerService.peer?.addTrack(track, myStream);
+    try {
+      const connectionState = PeerService.peer?.connectionState?.toString();
+      if (connectionState === "have-local-offer") {
+        await PeerService.setLocalDescription(data);
+        for (const track of myStream?.getTracks() || []) {
+          //@ts-ignore
+          PeerService.peer?.addTrack(track, myStream);
+        }
+      } else {
+        console.error("PeerConnection is not in the correct state to set remote answer.");
+      }
+    } catch (error) {
+      console.error("Error setting remote answer:", error);
     }
   }, [myStream]);
+  
 
   useEffect(() => {
     PeerService.peer?.addEventListener("track", (event) => {
       setRemoteStream(event.streams[0]);
+      console.log(remoteStream);
     });
   }, []);
 
