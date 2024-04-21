@@ -29,6 +29,7 @@ app.use(express_1.default.json());
 app.use("/api/v1/auth", userRoutes_1.default);
 app.use("/api/v1/queries", queryRoutes_1.default);
 app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    return res.send("hello");
 }));
 exports.io.on('connection', (socket) => {
     console.log('A user connected!', socket.id);

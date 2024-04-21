@@ -67,6 +67,6 @@ app.use((err:Error, req:Request, res:Response, next:NextFunction)=>{
   })
 })
 // Start the server
-server.listen(443, () => {
+server.listen(3000, () => {
   console.log('Server listening on port 3000');
 });
